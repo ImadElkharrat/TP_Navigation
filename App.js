@@ -34,12 +34,14 @@ function Tabs({ navigation }) {
 /* ----------------------------------------------
  Menu latéral
 ------------------------------------------------- */
-function MenuPrincipal() {
+function MenuPrincipal({ onLogout }) {
  return (
  <Drawer.Navigator>
- <Drawer.Screen name="Onglets" component={Tabs} />
- <Drawer.Screen name="Paramètres" component={Parametres} />
- <Drawer.Screen name="Se déconnecter" component={Logout} />
+  <Drawer.Screen name="Onglets" component={Tabs} />
+  <Drawer.Screen name="Paramètres" component={Parametres} />
+  <Drawer.Screen name="Se déconnecter">
+   {(props) => <Logout {...props} onLogout={onLogout} />}
+  </Drawer.Screen>
  </Drawer.Navigator>
  );
 }
@@ -58,21 +60,25 @@ export default function App() {
  )}
  </Stack.Screen>
  ) : (
- <Stack.Screen name="Application" component={MenuPrincipal} />
+ <Stack.Screen name="Application">
+ {(props) => (
+  <MenuPrincipal {...props} onLogout={() => setIsLogged(false)} />
+ )}
+ </Stack.Screen>
  )}
  </Stack.Navigator>
  </NavigationContainer>
  );
 }
 
-function Logout({ navigation }) {
-return (
- <Button
-   title="Se déconnecter"
-   onPress={() => navigation.reset({
-     index: 0,
-     routes: [{ name: 'Login' }],
-   })}
- />
-);
+function Logout({ navigation, onLogout }) {
+ return (
+  <Button
+    title="Se déconnecter"
+    onPress={() => {
+     onLogout();
+     navigation.closeDrawer();
+    }}
+  />
+ );
 }
